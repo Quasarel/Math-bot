@@ -6,7 +6,7 @@ from aiogram import Bot, types, Dispatcher, F
 
 from aiogram.enums import ParseMode
 from database import database as db
-from database.database import Settings
+from database.db_map import Settings
 from aiogram.filters.command import Command
 from aiogram.utils.markdown import text, bold, italic
 from aiogram.types import InlineKeyboardButton, BotCommand, InlineKeyboardMarkup
@@ -53,9 +53,9 @@ async def process_start_command(message: types.Message):
     await start_command(message.chat.id)
 
 
-@dp.message(Command("diff_help"))
+@dp.message(Command("help"))
 async def process_help_command(message: types.Message):
-    await diff_help_command(message.from_user.id, 0)
+    await help_command(message.from_user.id)
 
 
 @dp.message(Command("settings"))
@@ -80,7 +80,8 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
         if settings:
             settings.timer_limit = int(callback_query.data.replace("settings_", ""))
         else:
-            session.add(Settings(tg_id=callback_query.message.chat.id, timer_limit=int(callback_query.data.replace("settings_", ""))))
+            session.add(Settings(tg_id=callback_query.message.chat.id,
+                                 timer_limit=int(callback_query.data.replace("settings_", ""))))
         session.commit()
         session.close()
     button_end = InlineKeyboardButton(text='Меню', callback_data='start')
@@ -88,7 +89,8 @@ async def callback_query_handler(callback_query: types.CallbackQuery):
     kb_builder = InlineKeyboardBuilder()
     kb_builder.row(button_end, width=1)
     greet_kb1 = kb_builder.as_markup()
-    await bot.send_message(callback_query.message.chat.id, "Настройки успешно установлены\nЧто делать дальше?", parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
+    await bot.send_message(callback_query.message.chat.id, "Настройки успешно установлены\nЧто делать дальше?",
+                           parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
 
 
 @dp.callback_query(F.data == 'start')
@@ -218,14 +220,26 @@ async def start_command(user_id: any):
     button_3 = InlineKeyboardButton(text='Возведение в степень', callback_data='diff_help_2')
     button_ex = InlineKeyboardButton(text='Экзамен', callback_data='diff_help_ex')
 
-    # keyboard = [[button_start]]
     kb_builder = InlineKeyboardBuilder()
     kb_builder.row(button_1, width=1)
     kb_builder.row(button_2)
     kb_builder.row(button_3)
     kb_builder.row(button_ex)
     greet_kb1 = kb_builder.as_markup()
-    # greet_kb1 = InlineKeyboardMarkup(inline_keyboard=keyboard)
+    await bot.send_message(user_id, msg, parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
+
+
+async def help_command(user_id: any):
+    msg = text(bold("Помощь"),
+               bold("/start") + " – запуск главного меню и выбор уровня сложности.",
+               bold("/settings") + " – настройка ограничения по времени.", sep='\n')
+    button_start = InlineKeyboardButton(text='Приступить', callback_data='diff')
+    button_end = InlineKeyboardButton(text='Назад', callback_data='start')
+
+    kb_builder = InlineKeyboardBuilder()
+    kb_builder.row(button_start, width=1)
+    kb_builder.row(button_end)
+    greet_kb1 = kb_builder.as_markup()
     await bot.send_message(user_id, msg, parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
 
 
@@ -245,8 +259,8 @@ async def diff_help_command(user_id: any, difficulty: int):
                    italic("Вы готовы начать упражнения?:"), sep='\n')
     if difficulty == 2:
         msg = text(bold("Возведение в степень"), italic("ОПИСАНИЕ:"),
-                   bold("Умножение") + " чисел от 1 до 10",
-                   bold("Деление") + " чисел от 1 до 10",
+                   bold("Возведение") + " чисел от 1 до 10 " + bold("в степень") + " от 0 до 10",
+                   bold("Извлечение квадратного корня") + " чисел от 1 до 100",
                    "Предлагается 5 вариантов ответа.",
                    italic("Вы готовы начать упражнения?:"), sep='\n')
     if difficulty == 99:
@@ -333,7 +347,7 @@ async def generate(user_id, chat_id, difficulty):
         if rand == 0:
             request = "" + str(first_denominator) + " ^ x = " + str(first_denominator ** second_denominator)
             correct_answer = second_denominator
-        elif rand == 1 and first_denominator > 0:
+        elif rand == 1 and second_denominator > 0:
             request = "x ^ " + str(second_denominator) + " = " + str(first_denominator ** second_denominator)
             correct_answer = first_denominator
         else:
@@ -389,7 +403,8 @@ async def answer_options(request: str, correct_answer, user_id, this_is_division
     kb_builder.row(button_end)
     greet_kb1 = kb_builder.as_markup()
     timer_message = "Поторопитесь, у вас " + str(timeout) + " секунд"
-    message = await bot.send_message(chat_id, msg + "\n" + timer_message, parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
+    message = await bot.send_message(chat_id, msg + "\n" + timer_message,
+                                     parse_mode=ParseMode.MARKDOWN, reply_markup=greet_kb1)
     if message.chat.id not in user_dict:
         user_dict[message.chat.id] = {}
     user_dict[message.chat.id][str(message.message_id)] = 0
@@ -398,7 +413,8 @@ async def answer_options(request: str, correct_answer, user_id, this_is_division
         timeout = timeout - 1
         timer_message = "Поторопитесь, у вас " + str(timeout) + " секунд"
         if user_dict[message.chat.id] and user_dict[message.chat.id][str(message.message_id)] == 0:
-            await message.edit_text(text=msg + "\n" + timer_message, parse_mode=ParseMode.MARKDOWN, reply_markup=message.reply_markup)
+            await message.edit_text(text=msg + "\n" + timer_message,
+                                    parse_mode=ParseMode.MARKDOWN, reply_markup=message.reply_markup)
         else:
             break
 
