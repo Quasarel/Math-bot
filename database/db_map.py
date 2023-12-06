@@ -9,3 +9,4 @@ class Settings(Base):
     __tablename__ = 'Settings'
     tg_id = Column(Integer, primary_key=True)
     timer_limit = Column(Integer)
+    question_count = Column(Integer)

@@ -4,20 +4,65 @@ from lexicon.lexicon import LEXICON
 
 
 def create_start_kb() -> InlineKeyboardMarkup:
-    button_1 = InlineKeyboardButton(text=LEXICON['diff_0'], callback_data='diff_help_0')
-    button_2 = InlineKeyboardButton(text=LEXICON['diff_1'], callback_data='diff_help_1')
-    button_3 = InlineKeyboardButton(text=LEXICON['diff_2'], callback_data='diff_help_2')
+    button_1 = InlineKeyboardButton(text=LEXICON['chap_0'], callback_data='diff_help_0')
+    button_2 = InlineKeyboardButton(text=LEXICON['chap_1'], callback_data='diff_help_1')
+    # button_3 = InlineKeyboardButton(text=LEXICON['diff_2'], callback_data='diff_help_2')
     button_ex = InlineKeyboardButton(text=LEXICON['diff_ex'], callback_data='diff_help_ex')
 
     kb_builder = InlineKeyboardBuilder()
     kb_builder.row(button_1, width=1)
     kb_builder.row(button_2)
-    kb_builder.row(button_3)
+    # kb_builder.row(button_3)
     kb_builder.row(button_ex)
     return kb_builder.as_markup()
 
 
 def create_help_kb() -> InlineKeyboardMarkup:
+    button_end = InlineKeyboardButton(text=LEXICON['menu'], callback_data='start')
+    kb_builder = InlineKeyboardBuilder()
+    kb_builder.row(button_end, width=1)
+    return kb_builder.as_markup()
+
+
+def create_help_0_kb() -> InlineKeyboardMarkup:
+    button_1 = InlineKeyboardButton(text=LEXICON['diff_0_0'], callback_data='diff_0')
+    button_2 = InlineKeyboardButton(text=LEXICON['diff_0_1'], callback_data='diff_1')
+    button_3 = InlineKeyboardButton(text=LEXICON['diff_0_2'], callback_data='diff_2')
+    button_ex = InlineKeyboardButton(text=LEXICON['diff_ex'], callback_data='diff_ex')
+    button_end = InlineKeyboardButton(text=LEXICON['back'], callback_data='start')
+    # button_start = InlineKeyboardButton(text=LEXICON['begin'], callback_data='diff')
+    # button_end = InlineKeyboardButton(text=LEXICON['back'], callback_data='start')
+    # kb_builder = InlineKeyboardBuilder()
+    # kb_builder.row(button_start, width=1)
+    # kb_builder.row(button_end)
+    kb_builder = InlineKeyboardBuilder()
+    kb_builder.row(button_1, width=1)
+    kb_builder.row(button_2)
+    kb_builder.row(button_3)
+    kb_builder.row(button_ex)
+    kb_builder.row(button_end)
+    return kb_builder.as_markup()
+
+
+def create_help_1_kb() -> InlineKeyboardMarkup:
+    button_1 = InlineKeyboardButton(text=LEXICON['diff_1_0'], callback_data='diff_0')
+    button_2 = InlineKeyboardButton(text=LEXICON['diff_1_1'], callback_data='diff_1')
+    button_ex = InlineKeyboardButton(text=LEXICON['diff_ex'], callback_data='diff_ex')
+    button_end = InlineKeyboardButton(text=LEXICON['back'], callback_data='start')
+    # button_start = InlineKeyboardButton(text=LEXICON['begin'], callback_data='diff')
+    # button_end = InlineKeyboardButton(text=LEXICON['back'], callback_data='start')
+    # kb_builder = InlineKeyboardBuilder()
+    # kb_builder.row(button_start, width=1)
+    # kb_builder.row(button_end)
+    kb_builder = InlineKeyboardBuilder()
+    kb_builder.row(button_1, width=1)
+    kb_builder.row(button_2)
+    kb_builder.row(button_ex)
+    kb_builder.row(button_end)
+    return kb_builder.as_markup()
+
+
+def create_help_ex_kb() -> InlineKeyboardMarkup:
     button_start = InlineKeyboardButton(text=LEXICON['begin'], callback_data='diff')
     button_end = InlineKeyboardButton(text=LEXICON['back'], callback_data='start')
     kb_builder = InlineKeyboardBuilder()
@@ -33,6 +78,17 @@ def create_settings_kb() -> InlineKeyboardMarkup:
     button_30 = InlineKeyboardButton(text=LEXICON['30_sec'], callback_data='settings_30')
 
     keyboard = [[button_5, button_10, button_15, button_30]]
+
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def create_settings2_kb() -> InlineKeyboardMarkup:
+    button_5 = InlineKeyboardButton(text=LEXICON['5_question'], callback_data='question_5')
+    button_10 = InlineKeyboardButton(text=LEXICON['10_question'], callback_data='question_10')
+    button_15 = InlineKeyboardButton(text=LEXICON['15_question'], callback_data='question_15')
+    button_20 = InlineKeyboardButton(text=LEXICON['20_question'], callback_data='question_20')
+
+    keyboard = [[button_5, button_10, button_15, button_20]]
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
