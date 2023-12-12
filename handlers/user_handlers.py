@@ -5,8 +5,8 @@ from database import database as db
 from database.db_map import Settings
 from aiogram.filters.command import Command
 from services.business_logic import user_dict, StateMemory, generate, display_results
-from keyboard.keyboard import (create_start_kb, create_help_kb, create_help_0_kb, create_help_1_kb, create_help_ex_kb, create_settings_kb,
-                               create_settings_success, create_settings2_kb)
+from keyboard.keyboard import (create_start_kb, create_help_kb, create_help_0_kb, create_help_1_kb, create_help_2_kb,
+                               create_help_ex_kb, create_settings_kb, create_settings_success, create_settings2_kb)
 
 from lexicon.lexicon import LEXICON
 
@@ -87,6 +87,10 @@ async def callback_query_handler(callback_query: CallbackQuery, state):
         msg = LEXICON['diff_1_help']
         await state.update_data(chapter=1)
         diff_help_kb = create_help_1_kb()
+    elif callback_query.data == "diff_help_2":
+        msg = LEXICON['diff_2_help']
+        await state.update_data(chapter=2)
+        diff_help_kb = create_help_2_kb()
     elif callback_query.data == "diff_help_ex":
         msg = LEXICON['diff_ex_help']
         await state.update_data(chapter=99)
@@ -114,6 +118,9 @@ async def callback_query_handler(callback_query: types.CallbackQuery, state):
             await state.update_data(difficulty=1)
         elif callback_query.data == "diff_ex":
             await state.update_data(difficulty=99)
+    elif user_data['chapter'] == 2:
+        if callback_query.data == "diff_0":
+            await state.update_data(difficulty=0)
     else:
         await state.update_data(difficulty=99)
     await state.set_state(StateMemory.diff0)

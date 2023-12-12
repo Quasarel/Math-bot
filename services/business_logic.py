@@ -68,14 +68,16 @@ async def display_results(message: Message):
 async def generate(message: Message, chapter, difficulty):
     if difficulty == 99:
         if chapter == 99:
-            chapter: int = random.randint(0, 1)
+            chapter: int = random.randint(0, 2)
         mode = 0
         if chapter == 0:
             mode: int = random.randint(0, 5)
         elif chapter == 1:
             mode: int = random.randint(0, 3)
+        elif chapter == 2:
+            mode: int = random.randint(0, 1)
     else:
-        mode: int = random.randint(0, 1) + difficulty * 2
+        mode: int = 1  # random.randint(0, 1) + difficulty * 2
     multiplication_table = [[i * j for j in range(1, 11)] for i in range(1, 11)]
     # angle = ["0", "π/6", "π/4", "π/3", "π/2", "π", "3π/2", "2π"]
     angle = ["0", "π/6", "π/4", "π/3", "π/2", "2π/3", "3π/4", "5π/6", "π",
@@ -92,6 +94,10 @@ async def generate(message: Message, chapter, difficulty):
     # ctg_value = ["не опр.", "√3", "1", "√3/3", "0", "не опр.", "0", "не опр."]
     ctg_value = ["не опр.", "-√3", "-1", "-√3/3", "0", "√3/3", "1", "√3",
                  "не опр.", "-√3", "-1", "-√3/3", "0", "√3/3", "1", "√3", "не опр."]
+    angle = ["0", "π/6", "π/4", "π/3", "π/2", "2π/3", "3π/4", "5π/6", "π",
+             "7π/6", "5π/4", "4π/3", "3π/2", "5π/3", "7π/4", "11π/6", "2π"]
+    derivative = ["C", "x", "√x", "a^x", "e^x", "lnx", "sin(x)", "cos(x)"]
+    derivative_value = ["0", "1", "1/2√x", "a^(x)lna", "e^x", "1/x", "cos(x)", "-sin(x)"]
     request = ""
     correct_answer = 0
     this_is_division = False
@@ -192,6 +198,19 @@ async def generate(message: Message, chapter, difficulty):
             second_denominator: str = ctg_value[rand]
             request = "ctg(" + str(first_denominator) + ") = ?"
             correct_answer = second_denominator
+    elif chapter == 2:
+        if mode == 0:
+            rand = random.randint(0, len(derivative)-1)
+            first_denominator: str = derivative[rand]
+            second_denominator: str = derivative_value[rand]
+            request = "f'(" + str(first_denominator) + ") = ?"
+            correct_answer = second_denominator
+        if mode == 1:
+            rand = random.randint(0, len(derivative) - 1)
+            first_denominator: str = derivative[rand]
+            second_denominator: str = derivative_value[rand]
+            request = "F'(" + str(second_denominator) + ") = ? + C"
+            correct_answer = first_denominator
     await answer_options(request, correct_answer, message, this_is_division, chapter, difficulty)
 
 
@@ -204,6 +223,8 @@ async def answer_options(request: str, correct_answer, message, this_is_division
     # angle = ["0", "pi/6", "pi/4", "pi/3", "pi/2", "pi", "3\\*pi/2", "2\\*pi"]
     trigonometric_value = ["0", "1/2", "√2/2", "√3/2", "1", "-√3/2", "-√2/2", "-1/2",
                            "-1", "√3/3", "√3", "-√3/3", "-√3", "не опр."]
+    derivative_value = ["0", "1", "1/2√x", "a^(x)lna", "e^x", "1/x", "cos(x)", "-sin(x)",
+                        "C", "x", "√x", "a^x", "e^x", "lnx", "sin(x)", "cos(x)"]
     if settings:
         timeout = settings.timer_limit
         question_count = settings.question_count
@@ -222,16 +243,19 @@ async def answer_options(request: str, correct_answer, message, this_is_division
             list_of_option += [rand_answer]
             callback_array += ["answer_" + str(correct_answer)]
         else:
-            if chapter != 1:
+            if chapter == 0:
                 if correct_answer - 10 < 0:
                     while rand_answer == correct_answer or rand_answer in list_of_option:
                         rand_answer = random.randint(1, correct_answer + 10)
                 else:
                     while rand_answer == correct_answer or rand_answer in list_of_option:
                         rand_answer = random.randint(correct_answer - 10, correct_answer + 10)
-            else:
+            elif chapter == 1:
                 while rand_answer == correct_answer or rand_answer in list_of_option:
                     rand_answer = trigonometric_value[random.randint(1, len(trigonometric_value)-1)]
+            else:
+                while rand_answer == correct_answer or rand_answer in list_of_option:
+                    rand_answer = derivative_value[random.randint(1, len(derivative_value)-1)]
             list_of_option += [rand_answer]
             callback_array += ["answer_" + str(correct_answer)]
     msg = LEXICON['what_is'].replace("%1", request)
