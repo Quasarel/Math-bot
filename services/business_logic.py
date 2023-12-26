@@ -77,7 +77,7 @@ async def generate(message: Message, chapter, difficulty):
         elif chapter == 2:
             mode: int = random.randint(0, 1)
     else:
-        mode: int = 1  # random.randint(0, 1) + difficulty * 2
+        mode: int = random.randint(0, 1) + difficulty * 2
     multiplication_table = [[i * j for j in range(1, 11)] for i in range(1, 11)]
     # angle = ["0", "π/6", "π/4", "π/3", "π/2", "π", "3π/2", "2π"]
     angle = ["0", "π/6", "π/4", "π/3", "π/2", "2π/3", "3π/4", "5π/6", "π",
